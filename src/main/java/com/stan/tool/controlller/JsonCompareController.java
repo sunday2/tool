@@ -1,15 +1,15 @@
 package com.stan.tool.controlller;
 
-import com.stan.tool.model.req.JsonCompareReq;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.stan.tool.model.resp.RespVO;
+import com.stan.tool.service.JsonCompareService;
 import com.stan.tool.util.ResponseUtil;
 import com.stan.tool.validator.JSONValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,13 +32,14 @@ public class JsonCompareController {
     @Autowired
     protected JSONValidator jsonValidator;
 
+    @Autowired
+    protected JsonCompareService jsonCompareService;
+
     @PostMapping("/compare")
-    public RespVO compare(@RequestBody @Validated JsonCompareReq req, BindingResult result, HttpServletRequest httpRequest) {
-        logger.debug("come.......");
-//        if (!result.hasErrors()) {
-//            this.jsonValidator.validate(req.getOldStr(),result);
-//            this.jsonValidator.validate(req.getOldStr(),result);
-//        }
+    public RespVO compare(@RequestBody String req, BindingResult result, HttpServletRequest httpRequest) {
+        JsonObject reqJson = new Gson().fromJson(req,JsonObject.class);
+//        this.jsonValidator.validate(reqJson.get("oldJson").getAsString(),result);
+//        this.jsonValidator.validate(reqJson.get("newJson").getAsString(),result);
         if (result.hasErrors()) {
             logger.error("validate error.");
             StringBuilder sb = new StringBuilder();
@@ -47,7 +48,7 @@ public class JsonCompareController {
             });
             return ResponseUtil.error(sb.toString());
         } else {
-            return ResponseUtil.success();
+            return ResponseUtil.success(jsonCompareService.compare(reqJson.getAsJsonObject("oldJson"),reqJson.getAsJsonObject("newJson")));
         }
     }
 
