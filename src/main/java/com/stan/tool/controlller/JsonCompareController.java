@@ -9,11 +9,13 @@ import com.stan.tool.validator.JSONValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -23,7 +25,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author: largebear229@gmail.com
  * @create: 2020-09-05 16:37
  **/
-@RestController
+@Controller
 @RequestMapping("/api/json")
 public class JsonCompareController {
 
@@ -35,6 +37,7 @@ public class JsonCompareController {
     @Autowired
     protected JsonCompareService jsonCompareService;
 
+    @ResponseBody
     @PostMapping("/compare")
     public RespVO compare(@RequestBody String req, BindingResult result, HttpServletRequest httpRequest) {
         JsonObject reqJson = new Gson().fromJson(req,JsonObject.class);
@@ -50,6 +53,16 @@ public class JsonCompareController {
         } else {
             return ResponseUtil.success(jsonCompareService.compare(reqJson.getAsJsonObject("oldJson"),reqJson.getAsJsonObject("newJson")));
         }
+    }
+
+    @GetMapping("/index")
+    public String index(){
+        return "index";
+    }
+
+    @GetMapping("test/compare")
+    public String compare(){
+        return "jsonCompare";
     }
 
 
