@@ -38,7 +38,7 @@ public class JsonCompareController {
     protected JsonCompareService jsonCompareService;
 
     @ResponseBody
-    @PostMapping("/compare")
+    @PostMapping("/compare/result")
     public RespVO compare(@RequestBody String req, BindingResult result, HttpServletRequest httpRequest) {
         JsonObject reqJson = new Gson().fromJson(req,JsonObject.class);
 //        this.jsonValidator.validate(reqJson.get("oldJson").getAsString(),result);
@@ -60,7 +60,8 @@ public class JsonCompareController {
         return "index";
     }
 
-    @GetMapping("test/compare")
+
+    @GetMapping("compare")
     public String compare(){
         return "jsonCompare";
     }
