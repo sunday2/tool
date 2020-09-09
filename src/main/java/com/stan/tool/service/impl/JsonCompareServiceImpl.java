@@ -1,6 +1,5 @@
 package com.stan.tool.service.impl;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.stan.tool.model.dto.JsonCompareResult;
 import com.stan.tool.service.JsonCompareService;
@@ -29,8 +28,8 @@ public class JsonCompareServiceImpl implements JsonCompareService {
             } else if (!a.get(o).getAsString().equals(b.get(o).getAsString())) {
                 JsonCompareResult.ValueDiff valueDiff = new JsonCompareResult.ValueDiff();
                 valueDiff.setKey(o);
-                valueDiff.setAValue(a.get(o).getAsString());
-                valueDiff.setBValue(b.get(o).getAsString());
+                valueDiff.setA(a.get(o).getAsString());
+                valueDiff.setB(b.get(o).getAsString());
                 valueDiffs.add(valueDiff);
             }
         });
@@ -39,8 +38,8 @@ public class JsonCompareServiceImpl implements JsonCompareService {
                 bOnly.addProperty(o,b.get(o).getAsString());
             }
         });
-        compareResult.setAOnly(new Gson().toJson(aOnly));
-        compareResult.setBOnly(new Gson().toJson(bOnly));
+        compareResult.setAOnly(aOnly.toString());
+        compareResult.setBOnly(bOnly.toString());
         compareResult.setValueDiffs(valueDiffs);
         return compareResult;
     }

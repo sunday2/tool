@@ -1,15 +1,18 @@
 package com.stan.tool.controlller;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.stan.tool.model.resp.RespVO;
 import com.stan.tool.service.JsonCompareService;
 import com.stan.tool.util.ResponseUtil;
 import com.stan.tool.validator.JSONValidator;
+import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,6 +43,7 @@ public class JsonCompareController {
     @ResponseBody
     @PostMapping("/compare/result")
     public RespVO compare(@RequestBody String req, BindingResult result, HttpServletRequest httpRequest) {
+        logger.debug("come.....");
         JsonObject reqJson = new Gson().fromJson(req,JsonObject.class);
 //        this.jsonValidator.validate(reqJson.get("oldJson").getAsString(),result);
 //        this.jsonValidator.validate(reqJson.get("newJson").getAsString(),result);
@@ -51,7 +55,9 @@ public class JsonCompareController {
             });
             return ResponseUtil.error(sb.toString());
         } else {
-            return ResponseUtil.success(jsonCompareService.compare(reqJson.getAsJsonObject("oldJson"),reqJson.getAsJsonObject("newJson")));
+            Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+            logger.info("a:{},b:{}",reqJson.get("a"),reqJson.get("b"));
+            return ResponseUtil.success(jsonCompareService.compare(gson.fromJson(StringEscapeUtils.unescapeJson(reqJson.get("a").getAsString()),JsonObject.class),gson.fromJson(StringEscapeUtils.unescapeJson(reqJson.get("b").getAsString()),JsonObject.class)));
         }
     }
 
@@ -62,8 +68,18 @@ public class JsonCompareController {
 
 
     @GetMapping("compare")
-    public String compare(){
+    public String compare(Model model){
         return "jsonCompare";
+    }
+
+
+    public static void main(String[] args) {
+        String a = new String("abc").intern();
+        String b = "abc";
+        String c = new StringBuilder("a").append("bc").toString();
+        if (a == c) {
+            System.out.println("yes");
+        }
     }
 
 

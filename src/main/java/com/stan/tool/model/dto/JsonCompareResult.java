@@ -22,8 +22,8 @@ public class JsonCompareResult {
     @Data
     public static class ValueDiff{
         String key;
-        String aValue;
-        String bValue;
+        String a;
+        String b;
     }
 
 }
