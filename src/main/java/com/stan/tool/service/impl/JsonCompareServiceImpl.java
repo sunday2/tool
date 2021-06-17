@@ -1,5 +1,6 @@
 package com.stan.tool.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.gson.JsonObject;
 import com.stan.tool.model.dto.JsonCompareResult;
 import com.stan.tool.service.JsonCompareService;
@@ -42,5 +43,37 @@ public class JsonCompareServiceImpl implements JsonCompareService {
         compareResult.setBOnly(bOnly.toString());
         compareResult.setValueDiffs(valueDiffs);
         return compareResult;
+    }
+
+
+    @Override
+    public JsonCompareResult compare(String a,String b) {
+        JsonCompareResult compareResult = new JsonCompareResult();
+        JSONObject json1 = JSONObject.parseObject(a);
+        JSONObject json2 = JSONObject.parseObject(b);
+        JSONObject aOnly = new JSONObject();
+        JSONObject bOnly = new JSONObject();
+        List<JsonCompareResult.ValueDiff> valueDiffs = new ArrayList<>();
+        json1.keySet().stream().forEach(o->{
+            if (!json2.keySet().contains(o)){
+                aOnly.put(o, json1.get(o).toString());
+            } else if (!json1.get(o).toString().equals(json2.get(o).toString())) {
+                JsonCompareResult.ValueDiff valueDiff = new JsonCompareResult.ValueDiff();
+                valueDiff.setKey(o);
+                valueDiff.setA(json1.get(o).toString());
+                valueDiff.setB(json2.get(o).toString());
+                valueDiffs.add(valueDiff);
+            }
+        });
+        json2.keySet().stream().forEach(o->{
+            if (!json1.keySet().contains(o)) {
+                bOnly.put(o,json2.get(o).toString());
+            }
+        });
+        compareResult.setAOnly(aOnly.toString());
+        compareResult.setBOnly(bOnly.toString());
+        compareResult.setValueDiffs(valueDiffs);
+        return compareResult;
+
     }
 }
